@@ -1,0 +1,11 @@
+{
+  "name": "words",
+  "version": "1.0.0-dev0",
+  "description": "Swedish dictionary support for text template functions, using the Stava algorithms (SPRAK HT2021 project)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Leonard Wallentin",
+  "license": "MIT"
+}
