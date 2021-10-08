@@ -2,10 +2,16 @@
   "name": "words",
   "version": "1.0.0-dev0",
   "description": "Swedish dictionary support for text template functions, using the Stava algorithms (SPRAK HT2021 project)",
-  "main": "index.js",
+  "main": "src/words.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "lint": "eslint ."
   },
   "author": "Leonard Wallentin",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "eslint-plugin-jsdoc": "^36.1.0",
+    "mocha": "^9.1.1"
+  }
 }
