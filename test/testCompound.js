@@ -67,59 +67,59 @@ describe("Checking typical compound syntaxes", () => {
   })
   describe("pm+noun", () => {
     it("Zorntavla", () => {
-      let c = w.compounds("Zorntavla")
+      const c = w.compounds("Zorntavla")
       assert.deepEqual(c, ["zorn", "tavla"])
     })
     it("Älmhultsbo", () => {
-      c = w.compounds("Älmhultsbo")
+      const c = w.compounds("Älmhultsbo")
       assert.deepEqual(c, ["älmhults", "bo"])
     })
   })
   describe("adj+noun", () => {
     it("blånos", () => {
-      let c = w.compounds("blånos")
+      const c = w.compounds("blånos")
       assert.deepEqual(c, ["blå", "nos"])
     })
   })
   describe("vb+noun", () => {
     it("frysklamp", () => {
-      let c = w.compounds("frysklamp")
+      const c = w.compounds("frysklamp")
       assert.deepEqual(c, ["frys", "klamp"])
     })
   })
   describe("should handle adverb+noun", () => {
     it("innepryl", () => {
-      let c = w.compounds("innepryl")
+      const c = w.compounds("innepryl")
       assert.deepEqual(c, ["inne", "pryl"])
     })
   })
   describe("pronoun+noun", () => {
     it("jagroman", () => {
-      let c = w.compounds("jagroman")
+      const c = w.compounds("jagroman")
       assert.deepEqual(c, ["jag", "roman"])
     })
     it("ossfokus", () => {
-      let c = w.compounds("vifokus")
+      const c = w.compounds("vifokus")
       assert.deepEqual(c, ["vi", "fokus"])
     })
   })
   describe("cardinal+noun", () => {
     it("tresamhet", () => {
-      let c = w.compounds("tresamhet")
+      const c = w.compounds("tresamhet")
       assert.deepEqual(c, ["tre", "sam", "het"])
     })
     it("miljardklipp", () => {
-      let c = w.compounds("miljardklipp")
+      const c = w.compounds("miljardklipp")
       assert.deepEqual(c, ["miljard", "klipp"])
     })
   })
   describe("ordinal+noun", () => {
     it("fjortondeplats", () => {
-      let c = w.compounds("fjortondeplats")
+      const c = w.compounds("fjortondeplats")
       assert.deepEqual(c, ["fjortonde", "plats"])
     })
     it("femtegluttare", () => {
-      let c = w.compounds("femtegluttare")
+      const c = w.compounds("femtegluttare")
       assert.deepEqual(c, ["femte", "gluttare"])
     })
   })
@@ -129,18 +129,62 @@ describe("Checking typical compound syntaxes", () => {
       assert.deepEqual(c, ["in", "knuff"])
     })
     it("mellansnack", () => {
-      let c = w.compounds("mellansnack")
+      const c = w.compounds("mellansnack")
       assert.deepEqual(c, ["mellan", "snack"])
     })
     it("hinsideskänsla", () => {
-      let c = w.compounds("hinsideskänsla")
+      const c = w.compounds("hinsideskänsla")
       assert.deepEqual(c, ["hinsides", "känsla"])
     })
   })
   describe("interj+noun", () => {
     it("wowfaktor", () => {
-      let c = w.compounds("wowfaktor")
+      const c = w.compounds("wowfaktor")
       assert.deepEqual(c, ["wow", "faktor"])
+    })
+  })
+  describe("wordgroup+noun", () => {
+    it("åretruntcykling", () => {
+      const c = w.compounds("åretruntcykling")
+      assert.deepEqual(c, ["åretrunt", "cykling"])
+    })
+    it("undervattensutrustning", () => {
+      const c = w.compounds("undervattensutrustning")
+      assert.deepEqual(c, ["under", "vatten", "utrustning"])
+    })
+  })
+  describe("noun+adj", () => {
+    it("mötesintensiv", () => {
+      const c = w.compounds("mötesintensiv")
+      assert.deepEqual(c, ["mötes", "intensiv"])
+    })
+    it("Pekingvan", () => {
+      const c = w.compounds("Pekingvan")
+      assert.deepEqual(c, ["peking", "van"])
+    })
+    it("Addis Abeba-trogen", () => {
+      const c = w.compounds("Addis Abeba-trogen")
+      assert.deepEqual(c, ["addis abeba", "trogen"])
+    })
+  })
+  describe("adj+adj", () => {
+    it("blåbrun", () => {
+      const c = w.compounds("blåbrun")
+      assert.deepEqual(c, ["blå", "brun"])
+    })
+    it("blekorange", () => {
+      const c = w.compounds("blekorange")
+      assert.deepEqual(c, ["blek", "orange"])
+    })
+  })
+  describe("verb+adj", () => {
+    it("liggvänlig", () => {
+      const c = w.compounds("liggvänlig")
+      assert.deepEqual(c, ["ligg", "vänlig"])
+    })
+    it("köptrogen", () => {
+      const c = w.compounds("köptrogen")
+      assert.deepEqual(c, ["köp", "trogen"])
     })
   })
 })
