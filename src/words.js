@@ -6,9 +6,9 @@
  * Leonard Wallentin
  *
  */
+require('dotenv').config()
 const path = require("path")
 const fs = require("fs")
-require('dotenv').config()
 
 const TERRITORIES_FILE_NAME = "./assets/territory-prefixes.txt"
 
@@ -94,7 +94,7 @@ module.exports = function() {
       }
 
       // All Swedish prefixes must contain one vowel
-      const minimalSyllable = /^[qwrtpsdfghjklzxcvwbnmçĉćñţşŝśẑźđł]*[eëéèêüâáàȩæøœãõöyuioaåöä]/
+      const minimalSyllable = /^[qwrtpsdfghjklzxcvwbnmçĉćñţşŝśẑźđłß]*[eëéèêüâáàȩæøœãõöyuioaåöä]/
       const m = word.match(minimalSyllable)
       if (!m) {
         // No a possible prefix start found. Return early
