@@ -4,7 +4,7 @@
   "description": "Swedish dictionary support for text template functions, using the Stava algorithms (SPRAK HT2021 project)",
   "main": "src/words.js",
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "lint": "eslint .",
     "install": "echo Test"
   },
@@ -13,6 +13,7 @@
   "devDependencies": {
     "eslint": "^8.0.1",
     "eslint-plugin-jsdoc": "^36.1.1",
-    "mocha": "^9.1.1"
+    "mocha": "^9.1.3",
+    "nyc": "^15.1.0"
   }
 }
