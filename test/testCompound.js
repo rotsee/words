@@ -48,6 +48,10 @@ describe("compounds", () => {
     assert(c[0] === "snabb")
     assert(c[1] === "baka")
   })
+  it("should prefere double consonants to tripple", () => {
+    let c = w.compounds("vinnyheter")
+    assert.deepEqual(c, ["vin", "nyheter"])
+  })
 })
 describe("Checking typical compound syntaxes", () => {
   // From https://sv.wikipedia.org/wiki/Sammans%C3%A4ttning_(lingvistik)#Indelning_med_avseende_p%C3%A5_syntax
@@ -127,6 +131,10 @@ describe("Checking typical compound syntaxes", () => {
     it("mellansnack", () => {
       let c = w.compounds("mellansnack")
       assert.deepEqual(c, ["mellan", "snack"])
+    })
+    it("hinsideskänsla", () => {
+      let c = w.compounds("hinsideskänsla")
+      assert.deepEqual(c, ["hinsides", "känsla"])
     })
   })
   describe("interj+noun", () => {
