@@ -29,13 +29,6 @@ module.exports = function(dictionaryPath) {
   const _path = path.join(words.dictionaryPath, DICT_FILE_NAME)
   words.data = require(_path)
   
-  // ej sms
-  // data.filter(d => !d.WordForms.find(w => w.msd === "sms")).map(w => w.WordForms.map(wf => wf.writtenForm)).flat()
-  /*
-  words.allTheWords = words.data
-    .map(w => w.WordForms.map(wf => wf.writtenForm))
-    .flat()
-  */
   console.time()
   // Add initial parts by syntactic funtion
   // c*: compound form
@@ -89,7 +82,7 @@ module.exports = function(dictionaryPath) {
    * @returns {Array} list of parts
    */
   words.compounds = function(word) {
-    word = word.toLocaleLowerCase("sv")
+    word = word.toLocaleLowerCase("sv").replace("-", "")
     // Is this a non-prefix word in our dictionary?
     if (this.tails.includes(word)) {
       return [word]
@@ -108,7 +101,7 @@ module.exports = function(dictionaryPath) {
       if (!m) {
         // No a possible prefix start found. Return early
         // (this happens at the end of words, like ”knu|ff”)
-        return variants         
+        return variants
       }
       let prefix = m[0]
       let prefixBoundry = prefix.length
