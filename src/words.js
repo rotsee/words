@@ -8,8 +8,8 @@
  */
 const path = require("path")
 const fs = require("fs")
+require('dotenv').config()
 
-const DICT_FILE_NAME = "saldomp.json"
 const TERRITORIES_FILE_NAME = "./assets/territory-prefixes.txt"
 
 
@@ -22,12 +22,10 @@ const TERRITORIES_FILE_NAME = "./assets/territory-prefixes.txt"
  * const w = require("words")("dictionary")
  * w.compunds("Högstadiekorridor")
  */
-module.exports = function(dictionaryPath) {
+module.exports = function() {
   let words = {}
 
-  words.dictionaryPath = dictionaryPath
-  const _path = path.join(words.dictionaryPath, DICT_FILE_NAME)
-  words.data = require(_path)
+  words.data = require(process.env.DICT_FILE_NAME)
   
   console.time()
   // Add initial parts by syntactic funtion

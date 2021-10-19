@@ -1,7 +1,7 @@
 const assert = require("assert")
 
 const W = require("../src/words")
-const w = W("../")
+const w = W()
 
 describe("compounds", () => {
   it("should not break up words in dictionary", () => {
