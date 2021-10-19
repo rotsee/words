@@ -6,8 +6,11 @@
  * Leonard Wallentin
  *
  */
- const path = require("path")
- const DICT_FILE_NAME = "saldomp.json"
+const path = require("path")
+const fs = require("fs")
+
+const DICT_FILE_NAME = "saldomp.json"
+const TERRITORIES_FILE_NAME = "./assets/territory-prefixes.txt"
 
 
 /**
@@ -33,19 +36,45 @@ module.exports = function(dictionaryPath) {
     .map(w => w.WordForms.map(wf => wf.writtenForm))
     .flat()
   */
-  // ci: compound form, initial
+  console.time()
+  // Add initial parts by syntactic funtion
+  // c*: compound form
   // sms: compound form, free-standing
-  // https://spraakbanken.gu.se/en/resources/saldo/tagset
-  const isPrefix = w => ["cm", "ci", "c"].includes(w.msd)
-  const isTail = w => !["cm", "ci", "c", "sms"].includes(w.msd)
+  const isPrefix = w => [
+    "cm", "ci", "c", // compound parts
+    "num", "ord", // ordinals and cardinals
+  // ].includes(w.msd)
+  ].some(p => w.msd.split(" ").includes(p))
   words.prefixes = words.data
     .map(w => w.WordForms
       .filter(isPrefix)
       .map(wf => wf.writtenForm.toLocaleLowerCase("sv"))
-    )
-    .flat()
+    ).flat()
+  
+  // Add parts by word class
+  // https://spraakbanken.gu.se/en/resources/saldo/tagset
+  const isPrefixableClass = r => [
+    "pm", "pp",
+    "in", "inm",
+    "ssm",
+    "sxc", "mxc",
+  // ].includes(r.partOfSpeech)
+  ].some(p => r.partOfSpeech.split(" ").includes(p))
+  const morePrefixes = words.data
+    .filter(w => w.FormRepresentations.some(isPrefixableClass))
+    .map(w => w.WordForms
+      .map(wf => wf.writtenForm.toLocaleLowerCase("sv"))
+    ).flat()
+  words.prefixes = words.prefixes.concat(morePrefixes)
+  
+  // Add compound parts from territory list
+  const territories = fs.readFileSync(TERRITORIES_FILE_NAME, "utf8")
+  words.prefixes = words.prefixes
+    .concat(territories.split("\n"))
+    .map(w => w.toLocaleLowerCase("sv"))
+  
   // Every word that is not a prefix
-  console.time()
+  const isTail = w => !["cm", "ci", "c", "sms", "ord"].includes(w.msd)
   words.tails = words.data
     .map(w => w.WordForms
       .filter(isTail)
@@ -64,69 +93,88 @@ module.exports = function(dictionaryPath) {
     // Is this a non-prefix word in our dictionary?
     if (this.tails.includes(word)) {
       return [word]
-    }
-    // All Swedish prefixes must contain one vowel
-    
-    const minimalSyllable = /[qwrtpsdfghjklzxcvbnm]*[eyuioaåöä]\-?/
-    /*const m = word.match(minimalSyllable)
-    let candidate = m[0]
-    let candidateBoundry = candidate.length
-    */
+    }    
+
     /* Recursive function splitting function*/
-    let globalSplittingStage = 1
-    const split = (word) => {
-      const variants = []
+    const split = (word, prefixStack) => {
+      let variants = []
+      if (typeof prefixStack === "undefined") {
+        prefixStack = []
+      }
+
+      // All Swedish prefixes must contain one vowel
+      const minimalSyllable = /^[qwrtpsdfghjklzxcvwbnmçĉćñţşŝśẑźđł]*[eëéèêüâáàȩæøœãõöyuioaåöä]/
       const m = word.match(minimalSyllable)
-      let candidate = m[0]
-      let candidateBoundry = candidate.length
+      if (!m) {
+        // No a possible prefix start found. Return early
+        // (this happens at the end of words, like ”knu|ff”)
+        return variants         
+      }
+      let prefix = m[0]
+      let prefixBoundry = prefix.length
 
-      while (candidateBoundry < word.length) {
-        if (this.prefixes.includes(candidate)) {
-          globalSplittingStage++
-          // We found a prefix. Check if we already have a compound
-          // console.log("hittade", candidate)
-          let remainder = word.slice(candidate.length, word.length)
-          // console.log("rest", remainder)
-
+      while (prefixBoundry < word.length) {
+        if (this.prefixes.includes(prefix)) {
+          // We found a prefix.
+          // Check if the remainder is an allowed tail
+          const remainder = word.slice(prefixBoundry, word.length)    
+          const reminderWithoutGlue = remainder.slice(1, remainder.length)
+          const remainderWithExtraConsonant = prefix[prefix.length - 1] + remainder
           if (
-            (globalSplittingStage > 1) &&
+            (prefixStack.length) &&
             (remainder[0] === "s") &&
-            this.tails.includes(remainder.slice(1, remainder.length))
+            this.tails.includes(reminderWithoutGlue)
           ) {
             // If we hade more than one compound already,
             // first try removing glueing 's'!          
-            const reminderWithoutGlue = remainder.slice(1, remainder.length)
-            return [candidate, reminderWithoutGlue]
+            variants.push([...prefixStack, prefix, reminderWithoutGlue])
           } else if (this.tails.includes(remainder)) {
             // otherwise, try the whole rest
-            // variants.push([candidate, remainder])
-            return [candidate, remainder]
+            variants.push([...prefixStack, prefix, remainder])
           } else if (
-            candidate[candidate.length - 1] === candidate[candidate.length - 2] &&
-            this.tails.includes(candidate[candidate.length - 1] + remainder)
+            // Finally, check if we had a triple consonant reductions
+            prefix[prefix.length - 1] === prefix[prefix.length - 2] &&
+            this.tails.includes(remainderWithExtraConsonant)
           ) {
-            // also check for tripple-consonant reduction
-            // variants.push([candidate, candidate[candidate.length - 1] + remainder])
-            return [candidate, candidate[candidate.length - 1] + remainder]
+            variants.push([...prefixStack, prefix, remainderWithExtraConsonant])
           } else {
-            globalSplittingStage--
-            remainder = split(remainder)
-            if (remainder && remainder.length) {
-              // console.log("We could recursively split remainder!!!")
-              // variants.push([previousPrefixes, candidate, ...remainder])
-              return [candidate, ...remainder]
-            }
+            // Recursively keep splitting remainder
+            prefixStack.push(prefix)
+            variants = variants.concat(split(remainder, prefixStack))
+            prefixStack.pop()
           }
-        } else {
-          // console.log(candidate, "är inget ord")
         }
-        candidateBoundry++
-        candidate = word.slice(0, candidateBoundry)
+        prefixBoundry++
+        prefix = word.slice(0, prefixBoundry)
       }
-      return []
+      return variants
     }
-    console.log("I/O", word, split(word))
-    return split(word)
+
+    let candidates = split(word)
+    // pick the shortest lists
+    const shortest = Math.min(...candidates.map(c => c.length))
+    candidates = candidates.filter(c => c.length === shortest)
+    if (candidates.length > 1) {
+      // remove three-syllable compunds as they are more unlikely,
+      // according to Sjöbergh & Kann
+      const _ = candidates.filter(c => {
+        let tripple = false
+        c.forEach((part, i) => {
+          const len = part.length
+          const letter = part[len - 1]
+          const nextPart = c[i + 1]
+          if (nextPart && nextPart[0] === letter && part[len - 2] === letter) {
+            tripple = true
+          }
+        })
+        // Select those that are not tripple
+        return !tripple        
+      })
+      if (_.length) {
+        candidates = _
+      }
+    }
+    return candidates[0] 
   }
   
   return words
