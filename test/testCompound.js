@@ -35,13 +35,11 @@ describe("compounds", () => {
     assert(c.length === 4)
     assert.equal(c[3], "belysning")
   })
-  /*
   it("should break up verb compounds", () => {
     let c = w.compounds("korvätartävling")
     assert(c.length === 3)
     assert(c[0] === "korv")
   })
-  */
   it("should handle consonant ellipsis", () => {
     let c = w.compounds("snabbaka")
     assert(c.length === 2)
@@ -73,6 +71,10 @@ describe("Checking typical compound syntaxes", () => {
     it("Älmhultsbo", () => {
       const c = w.compounds("Älmhultsbo")
       assert.deepEqual(c, ["älmhults", "bo"])
+    })
+    it("Vänerlax", () => {
+      const c = w.compounds("Vänerlax")
+      assert.deepEqual(c, ["väner", "lax"])
     })
   })
   describe("adj+noun", () => {
