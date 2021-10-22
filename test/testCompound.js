@@ -34,6 +34,9 @@ describe("compounds", () => {
     let c = w.compounds("småbordsgranbelysning")
     assert(c.length === 4)
     assert.equal(c[3], "belysning")
+
+    c = w.compounds("kälborgarskjortknäppning")
+    assert.deepEqual(c, ["kälkborgar", "skjort", "knäppning"])
   })
   it("should break up verb compounds", () => {
     let c = w.compounds("korvätartävling")
