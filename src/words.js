@@ -27,14 +27,12 @@ module.exports = function() {
 
   words.data = require(process.env.DICT_FILE_NAME)
   
-  console.time()
   // Add initial parts by syntactic funtion
   // c*: compound form
   // sms: compound form, free-standing
   const isPrefix = w => [
     "cm", "ci", "c", // compound parts
     "num", "ord", // ordinals and cardinals
-  // ].includes(w.msd)
   ].some(p => w.msd.split(" ").includes(p))
   words.prefixes = words.data
     .map(w => w.WordForms
@@ -72,7 +70,7 @@ module.exports = function() {
       .map(wf => wf.writtenForm.toLocaleLowerCase("sv"))
     )
     .flat()
-  console.timeEnd()
+
   /**
    * Find compound word parts
    *
